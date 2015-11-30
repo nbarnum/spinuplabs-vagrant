@@ -32,15 +32,15 @@ package { ['sqlite3', 'libsqlite3-dev']:
 class install_postgres {
   class { 'postgresql::client': }
 
-  class { 'postgresql::server': 
-    listen_addresses  => '*',  
+  class { 'postgresql::server':
+    listen_addresses  => '*',
   }
 
   postgresql::server::db { 'appeer_dev':
     user     => 'vagrant',
     password => postgresql_password('vagrant', 'password'),
   }
-  
+
   package { 'libpq-dev':
     ensure => installed
   }
@@ -79,20 +79,20 @@ package { 'nodejs':
 # --- Ruby ---------------------------------------------------------------------
 
 exec { 'install_rvm':
-  command => "${as_vagrant} 'curl -L https://get.rvm.io | bash -s stable'",
+  command => "${as_vagrant} 'curl -sSL https://rvm.io/mpapis.asc | gpg --import -; curl -L https://get.rvm.io | bash -s stable'",
   creates => "${home}/.rvm",
   require => Package['curl']
 }
 
 exec { 'install_ruby':
-  command => "${as_vagrant} '${home}/.rvm/bin/rvm install 2.0.0 --autolibs=enabled'",
+  command => "${as_vagrant} '${home}/.rvm/bin/rvm install 2.2.0 --autolibs=enabled'",
   creates => "${home}/.rvm/bin/ruby",
   timeout => 600,
   require => [ Package['libyaml-dev'], Exec['install_rvm'] ]
 }
 
-exec { 'set_default_ruby': 
-  command => "${as_vagrant} '${home}/.rvm/bin/rvm --fuzzy alias create default 2.0.0 && ${home}/.rvm/bin/rvm use default'",
+exec { 'set_default_ruby':
+  command => "${as_vagrant} '${home}/.rvm/bin/rvm --fuzzy alias create default 2.2.0 && ${home}/.rvm/bin/rvm use default'",
   require => Exec['install_ruby']
 }
 
